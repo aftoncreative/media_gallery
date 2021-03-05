@@ -250,7 +250,6 @@ class MediaGalleryPlugin: FlutterPlugin, MethodCallHandler {
     val medias = mutableListOf<Map<String, Any>>()
     val offset = skip ?: 0
     var total = 0
-    var selection = if (collectionId == "__ALL__") null else "bucket_id = $collectionId"
 
     this.context.let { context ->
       if (context is Context) {
@@ -284,14 +283,14 @@ class MediaGalleryPlugin: FlutterPlugin, MethodCallHandler {
                                     ContentResolver.QUERY_ARG_SORT_DIRECTION,
                                     ContentResolver.QUERY_SORT_DIRECTION_DESCENDING
                             )
-                            putString(ContentResolver.QUERY_ARG_SQL_SELECTION, selection)
+                            putString(ContentResolver.QUERY_ARG_SQL_SELECTION, if (collectionId == "__ALL__") null else "bucket_id = $collectionId")
                         },
                         null)
             } else {
                 context.contentResolver.query(
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                         projection,
-                        selection,
+                        if (collectionId == "__ALL__") null else "bucket_id = $collectionId",
                         null,
                         "$orderBy LIMIT $limit OFFSET $offset")
             }?.use { c ->
@@ -334,7 +333,6 @@ class MediaGalleryPlugin: FlutterPlugin, MethodCallHandler {
     val medias = mutableListOf<Map<String, Any>>()
     val offset = skip ?: 0
     var total = 0
-    var selection = if (collectionId == "__ALL__") null else "bucket_id = $collectionId"
 
     this.context.let { context ->
       if (context is Context) {
@@ -354,7 +352,7 @@ class MediaGalleryPlugin: FlutterPlugin, MethodCallHandler {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 context.contentResolver.query(
-                        MediaStore.Images.Video.EXTERNAL_CONTENT_URI,
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                         projection,
                         Bundle().apply {
                             putInt(ContentResolver.QUERY_ARG_LIMIT, limit)
